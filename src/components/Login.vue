@@ -6,7 +6,8 @@
         <b-form-input
           id="email"
           required
-          v-model="email"
+          v-model.trim="$v.email.$model"
+          :state="$v.email.$dirty ? !$v.email.$error : null"
           type="email"
           placeholder="Enter email address"
         />
@@ -16,19 +17,35 @@
         <b-form-input
           id="password"
           required
-          v-model="password"
+          v-model.trim="$v.password.$model"
+          :state="$v.password.$dirty ? !$v.password.$error : null"
           type="password"
           placeholder="Password"
         />
       </b-form-group>
       <hr>
 
-      <b-button type="submit" variant="primary">Login</b-button>
+      <div v-if="authStatus != 'loading'">
+        <b-button
+          type="submit"
+          variant="primary"
+          :disabled="$v.email.$invalid || $v.password.$invalid"
+        >Login</b-button>
+      </div>
+
+      <div v-if="authStatus === 'loading'">
+        <b-button variant="primary" disabled>
+          <b-spinner small type="grow"/>Loading...
+        </b-button>
+      </div>
     </b-form>
   </div>
 </template>
 
 <script>
+import { validationMixin } from "vuelidate";
+import { required, minLength } from "vuelidate/lib/validators";
+
 export default {
   data() {
     return {
@@ -36,8 +53,23 @@ export default {
       password: ""
     };
   },
+  mixins: [validationMixin],
+  validations: {
+    email: {
+      required
+    },
+    password: {
+      required,
+      minLength: minLength(3)
+    }
+  },
+  computed: {
+    authStatus() {
+      return this.$store.getters.authStatus;
+    }
+  },
   methods: {
-    login: function() {
+    login() {
       let email = this.email;
       let password = this.password;
       this.$store

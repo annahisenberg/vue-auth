@@ -4,6 +4,8 @@ import router from './router'
 import store from './store'
 import Axios from 'axios'
 import BootstrapVue from 'bootstrap-vue'
+import Vuelidate from 'vuelidate'
+Vue.use(Vuelidate)
 
 Vue.use(BootstrapVue)
 

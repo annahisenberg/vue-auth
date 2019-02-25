@@ -3,20 +3,12 @@
     <b-form class="login" @submit.prevent="login">
       <h1>Sign in</h1>
       <b-form-group label="Email:" label-for="email">
-        <b-form-input
-          id="email"
-          required
-          v-model.trim="$v.email.$model"
-          :state="$v.email.$dirty ? !$v.email.$error : null"
-          type="email"
-          placeholder="Enter email address"
-        />
+        <b-form-input required v-model="username"/>
       </b-form-group>
 
       <b-form-group label="Password:" label-for="password">
         <b-form-input
           id="password"
-          required
           v-model.trim="$v.password.$model"
           :state="$v.password.$dirty ? !$v.password.$error : null"
           type="password"
@@ -26,11 +18,7 @@
       <hr>
 
       <div v-if="authStatus != 'loading'">
-        <b-button
-          type="submit"
-          variant="primary"
-          :disabled="$v.email.$invalid || $v.password.$invalid"
-        >Login</b-button>
+        <b-button type="submit" variant="primary" :disabled="$v.$invalid">Login</b-button>
       </div>
 
       <div v-if="authStatus === 'loading'">
@@ -49,18 +37,15 @@ import { required, minLength } from "vuelidate/lib/validators";
 export default {
   data() {
     return {
-      email: "",
+      username: "",
       password: ""
     };
   },
   mixins: [validationMixin],
   validations: {
-    email: {
-      required
-    },
     password: {
       required,
-      minLength: minLength(3)
+      minLength: minLength(7)
     }
   },
   computed: {
@@ -70,10 +55,11 @@ export default {
   },
   methods: {
     login() {
-      let email = this.email;
-      let password = this.password;
+      let v = this;
+      let username = v.username;
+      let password = v.password;
       this.$store
-        .dispatch("login", { email, password })
+        .dispatch("login", { "username": v.username, "password": v.password })
         .then(() => this.$router.push("/"))
         .catch(err => console.log(err));
     }
@@ -85,5 +71,10 @@ export default {
 input {
   width: 50%;
   margin: 0 auto;
+}
+
+.input.invalid input {
+  border: 1px solid red;
+  background: #ffc9aa;
 }
 </style>

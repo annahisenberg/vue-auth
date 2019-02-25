@@ -14,9 +14,13 @@ export default new Vuex.Store({
     auth_request(state) {
       state.status = 'loading'
     },
-    auth_success(state, token, user) {
+    auth_success(state, {
+      token,
+      user
+    }) {
       state.status = 'success'
       state.token = token
+      console.log(token, user);
       state.user = user
     },
     auth_error(state) {
@@ -28,13 +32,12 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    login({
-      commit
-    }, user) {
+    login({ commit }, user) {
       return new Promise((resolve, reject) => {
         commit('auth_request')
         axios({
-            url: 'http://localhost:3000/login',
+            // url: 'http://localhost:3000/login',
+            url: 'https://employeeauth_dev.msionline.com:9090/api/login',
             data: user,
             method: 'POST'
           })
@@ -43,8 +46,12 @@ export default new Vuex.Store({
             const user = resp.data.user
             localStorage.setItem('token', token)
             axios.defaults.headers.common['Authorization'] = token // allows you to set default header which will be sent with every request so that you don't need to attach the token manually to every request
-            commit('auth_success', token, user)
+            commit('auth_success', {
+              token,
+              user
+            })
             resolve(resp)
+            // console.log(resp);
           })
           .catch(err => {
             commit('auth_error')
@@ -94,5 +101,6 @@ export default new Vuex.Store({
   getters: {
     isLoggedIn: state => !!state.token,
     authStatus: state => state.status,
+    userInfo: state => state.user
   }
 })

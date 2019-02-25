@@ -36,7 +36,6 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         commit('auth_request')
         axios({
-            // url: 'http://localhost:3000/login',
             url: 'https://employeeauth_dev.msionline.com:9090/api/login',
             data: user,
             method: 'POST'
@@ -51,7 +50,6 @@ export default new Vuex.Store({
               user
             })
             resolve(resp)
-            // console.log(resp);
           })
           .catch(err => {
             commit('auth_error')
